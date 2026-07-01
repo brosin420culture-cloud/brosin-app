@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brosin · Añade tu local</title>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--yellow:#FFD400;--purple:#9013FE;--black:#141414;--ink:#1a1a1a;--soft:#6b6b6b;--line:#e4ddd0;--bg:#fbfaf4;--card:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Poppins',system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 80px}
+header{background:var(--black);padding:22px 16px;text-align:center;margin-bottom:18px;background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);background-size:14px 14px}
+.brand{font-family:'Bagel Fat One',cursive;color:var(--yellow);font-size:1.5rem}
+header p{margin:6px auto 0;max-width:54ch;font-size:.9rem;color:#dcdcdc}
+.intro{background:#fff6cc;border:1px solid #f1e2a0;color:#6b5600;border-radius:12px;padding:12px 16px;font-size:.86rem;margin-bottom:18px}
+.club{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 4px 14px rgba(20,20,20,.06)}
+.club h3{font-family:'Poppins';font-weight:800;margin:0 0 4px;color:var(--black);display:flex;justify-content:space-between;align-items:center}
+.del{background:none;border:none;color:#b1492f;font-size:.8rem;cursor:pointer;font-weight:600}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{display:block;font-size:.78rem;font-weight:700;margin:10px 0 3px;color:var(--soft)}
+label .req{color:#b1492f}
+input,select,textarea{width:100%;font-family:inherit;font-size:.92rem;padding:10px 11px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--purple)}
+textarea{resize:vertical;min-height:54px}
+.full{grid-column:1/-1}
+.ev{background:#f7faf4;border:1px dashed var(--yellow);border-radius:10px;padding:10px 12px;margin-top:10px}
+.ev .t{font-size:.78rem;font-weight:700;color:#7a6000;margin-bottom:4px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 20px}
+button.b{font-family:inherit;font-weight:700;font-size:.92rem;border:none;border-radius:12px;padding:13px 18px;cursor:pointer}
+.b.add{background:#fff;color:var(--black);border:1.5px solid var(--black)}
+.b.gen{background:var(--black);color:var(--yellow)}
+.b.copy{background:var(--yellow);color:var(--black)}
+.out{background:#16201a;color:#d7e7d2;border-radius:14px;padding:16px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.78rem;white-space:pre-wrap;word-break:break-word;max-height:340px;overflow:auto;margin-top:8px}
+.hint{font-size:.82rem;color:var(--soft);margin-top:6px}
+.note{font-size:.8rem;color:var(--soft);margin-top:8px}
+@media(max-width:560px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">🐝 Añade tu local a Brosin</div>
+  <p>Rellena los datos de tu club, grow shop o tienda CBD. Al terminar, pulsa <b>Generar</b> y mándanos el texto (cópialo o descárgalo). Es gratis salir en la app.</p>
+</header>
+<div class="wrap">
+  <div class="intro">💡 Lo imprescindible es <b>nombre, tipo, ciudad y dirección</b>. El resto mejora la ficha pero puede ir vacío.</div>
+  <div id="clubs"></div>
+  <div class="actions">
+    <button class="b add" onclick="addClub()">＋ Añadir otro local</button>
+    <button class="b gen" onclick="generar()">✅ Generar datos</button>
+  </div>
+  <div id="outwrap" style="display:none">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button class="b copy" onclick="copiar()">📋 Copiar</button>
+      <button class="b add" onclick="descargar()">⤓ Descargar archivo</button>
+      <span class="hint" id="copyok"></span>
+    </div>
+    <div class="out" id="out"></div>
+    <div class="note">Mándanos este texto por WhatsApp, email o Instagram y te ponemos en el mapa.</div>
+  </div>
+</div>
+<script>
+const TIPOS=[["csc","Club Social de Cannabis (CSC)"],["grow","Grow shop"],["cbd","Tienda de CBD"]];
+let n=0;
+function field(id,lbl,ph,req,half){return '<div class="'+(half?'':'full')+'"><label>'+lbl+(req?' <span class="req">*</span>':'')+'</label><input id="'+id+'" placeholder="'+(ph||'')+'"></div>';}
+function addClub(){
+  n++; const i=n;
+  const html='<div class="club" id="club'+i+'">'+
+   '<h3>Local nº '+i+' <button class="del" onclick="delClub('+i+')">✕ quitar</button></h3>'+
+   '<div class="grid">'+
+     field('nombre'+i,'Nombre','Ej: Brosin CSC',true,true)+
+     '<div><label>Tipo <span class="req">*</span></label><select id="tipo'+i+'">'+TIPOS.map(t=>'<option value="'+t[0]+'">'+t[1]+'</option>').join('')+'</select></div>'+
+     field('ciudad'+i,'Ciudad','Ej: Torre del Mar',true,true)+
+     field('provincia'+i,'Provincia','Ej: Málaga',false,true)+
+     '<div class="full"><label>Dirección completa <span class="req">*</span></label><input id="dir'+i+'" placeholder="Calle, número, CP, ciudad"></div>'+
+     field('tel'+i,'Teléfono / WhatsApp','Ej: 600 000 000',false,true)+
+     field('horario'+i,'Horario','Ej: Todos los días 12:00–23:30',false,true)+
+     field('contacto'+i,'Instagram / Web','Ej: @tuclub o tuweb.es',false,true)+
+     '<div><label>¿Acceso solo adultos?</label><select id="edad'+i+'"><option value="">No indicar</option><option>+18</option><option>+21</option></select></div>'+
+     '<div class="full"><label>Descripción corta</label><textarea id="desc'+i+'" placeholder="Ambiente, qué ofreces…"></textarea></div>'+
+   '</div>'+
+   '<div class="ev"><div class="t">📅 Próximo evento (opcional)</div><div class="grid">'+
+     field('evf'+i,'Fecha','Ej: 12 jul',false,true)+
+     field('evt'+i,'Título','Ej: Taller de cultivo',false,true)+
+     '<div class="full"><label>Detalle</label><input id="evi'+i+'" placeholder="Ej: 19:00 · gratis socios"></div>'+
+   '</div></div>'+
+  '</div>';
+  document.getElementById('clubs').insertAdjacentHTML('beforeend',html);
+}
+function delClub(i){const el=document.getElementById('club'+i);if(el)el.remove();}
+function val(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+function generar(){
+  const arr=[];
+  document.querySelectorAll('.club').forEach(c=>{
+    const i=c.id.replace('club','');
+    const nombre=val('nombre'+i); if(!nombre) return;
+    const o={nombre:nombre,tipo:val('tipo'+i),ciudad:val('ciudad'+i),provincia:val('provincia'+i),direccion:val('dir'+i),telefono:val('tel'+i),horario:val('horario'+i),contacto:val('contacto'+i),edad:val('edad'+i),descripcion:val('desc'+i)};
+    const ef=val('evf'+i),et=val('evt'+i),ei=val('evi'+i);
+    if(ef||et)o.evento={fecha:ef,titulo:et,detalle:ei};
+    arr.push(o);
+  });
+  if(!arr.length){alert('Añade al menos un local con nombre.');return;}
+  const out='=== LOCALES BROSIN ('+arr.length+') ===\n\n'+JSON.stringify(arr,null,2);
+  document.getElementById('out').textContent=out;
+  document.getElementById('outwrap').style.display='block';
+  document.getElementById('outwrap').scrollIntoView({behavior:'smooth'});
+}
+function copiar(){navigator.clipboard.writeText(document.getElementById('out').textContent).then(()=>{document.getElementById('copyok').textContent='✓ Copiado';},()=>{document.getElementById('copyok').textContent='Selecciónalo y cópialo a mano';});}
+function descargar(){const b=new Blob([document.getElementById('out').textContent],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='locales-brosin.txt';a.click();}
+addClub();
+</script>
+</body>
+</html>
