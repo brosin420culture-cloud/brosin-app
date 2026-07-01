@@ -188,6 +188,7 @@ header{background:var(--black);color:#fff;padding:13px 16px 12px;flex:none;z-ind
       <span class="chip soon" data-f="soon-carne">🔒 Carné</span>
     </div>
     <div class="filters">
+      <select id="paisSel"></select>
       <select id="ccaaSel"></select>
       <select id="provSel"></select>
       <button class="geobtn" id="geoBtn" onclick="toggleGeo(this)">📍 Cerca de mí</button>
@@ -433,7 +434,7 @@ const ICON={
  empresa:'<svg viewBox="0 0 44 44" width="34" height="34"><path d="M22 6 L37 13 V31 L22 38 L7 31 V13 Z" fill="#e0a05a" stroke="#141414" stroke-width="2.6" stroke-linejoin="round"/><path d="M7 13 L22 20 L37 13" fill="none" stroke="#141414" stroke-width="2.2" stroke-linejoin="round"/><path d="M22 20 V38" fill="none" stroke="#141414" stroke-width="2.2"/></svg>'
 };
 const TYPE={csc:{tint:"#FFF7D6",pin:"#FFD400",label:"Club Social",svg:ICON.csc},grow:{tint:"#EFEFE7",pin:"#141414",label:"Grow shop",svg:ICON.grow},cbd:{tint:"#F2E8FF",pin:"#9013FE",label:"Tienda CBD",svg:ICON.cbd},medicinal:{tint:"#E8F3EC",pin:"#2f7d4f",label:"Medicinal",svg:ICON.medicinal},empresa:{tint:"#FBEFE0",pin:"#c8732e",label:"Empresa",svg:ICON.empresa}};
-let filter="all",query="",selCcaa="",selProv="",markers=[],map=null;
+let filter="all",query="",selPais="",selCcaa="",selProv="",markers=[],map=null;
 let geoOn=false,userLat=null,userLng=null,userMarker=null;
 function starStr(r){const f=Math.round(r);return "★★★★★".slice(0,f)+"☆☆☆☆☆".slice(0,5-f);}
 function dist(la1,lo1,la2,lo2){var R=6371,dLa=(la2-la1)*Math.PI/180,dLo=(lo2-lo1)*Math.PI/180;var a=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)*Math.sin(dLo/2);return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
@@ -441,6 +442,7 @@ function dist(la1,lo1,la2,lo2){var R=6371,dLa=(la2-la1)*Math.PI/180,dLo=(lo2-lo1
 function visible(){
   return CLUBS.filter(function(c){
     if((filter==="csc"||filter==="grow"||filter==="cbd"||filter==="medicinal"||filter==="empresa") && c.type!==filter) return false;
+    if(selPais && (c.country||"España")!==selPais) return false;
     if(selCcaa && c.ccaa!==selCcaa) return false;
     if(selProv && c.prov!==selProv) return false;
     if(query){var t=(c.name+" "+c.city+" "+c.prov+" "+c.ccaa).toLowerCase(); if(t.indexOf(query)<0) return false;}
@@ -532,13 +534,19 @@ function toggleGeo(btn){
 }
 
 /* filtros provincia/ccaa */
+function paisOf(c){return c.country||"España";}
 function buildFilters(){
-  var ccaas=Array.from(new Set(CLUBS.map(function(c){return c.ccaa;}))).sort();
-  document.getElementById('ccaaSel').innerHTML='<option value="">Toda España</option>'+ccaas.map(function(c){return '<option>'+c+'</option>';}).join('');
+  var paises=Array.from(new Set(CLUBS.map(paisOf))).sort();
+  document.getElementById('paisSel').innerHTML='<option value="">Todos los países</option>'+paises.map(function(p){return '<option>'+p+'</option>';}).join('');
+  populateCcaa();
+}
+function populateCcaa(){
+  var ccaas=Array.from(new Set(CLUBS.filter(function(c){return !selPais||paisOf(c)===selPais;}).map(function(c){return c.ccaa;}))).sort();
+  document.getElementById('ccaaSel').innerHTML='<option value="">Todas las zonas</option>'+ccaas.map(function(c){return '<option>'+c+'</option>';}).join('');
   populateProv();
 }
 function populateProv(){
-  var provs=Array.from(new Set(CLUBS.filter(function(c){return !selCcaa||c.ccaa===selCcaa;}).map(function(c){return c.prov;}))).sort();
+  var provs=Array.from(new Set(CLUBS.filter(function(c){return (!selPais||paisOf(c)===selPais)&&(!selCcaa||c.ccaa===selCcaa);}).map(function(c){return c.prov;}))).sort();
   document.getElementById('provSel').innerHTML='<option value="">Todas las provincias</option>'+provs.map(function(p){return '<option>'+p+'</option>';}).join('');
 }
 
@@ -548,6 +556,7 @@ document.getElementById("chips").addEventListener("click",function(e){
   filter=ch.dataset.f; renderList(); drawMarkers();
 });
 document.getElementById("q").addEventListener("input",function(e){ query=e.target.value.toLowerCase().trim(); renderList(); drawMarkers(); });
+document.getElementById("paisSel").addEventListener("change",function(e){ selPais=e.target.value; selCcaa=""; selProv=""; populateCcaa(); renderList(); drawMarkers(); });
 document.getElementById("ccaaSel").addEventListener("change",function(e){ selCcaa=e.target.value; selProv=""; populateProv(); renderList(); drawMarkers(); });
 document.getElementById("provSel").addEventListener("change",function(e){ selProv=e.target.value; renderList(); drawMarkers(); });
 
