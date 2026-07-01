@@ -182,6 +182,7 @@ header{background:var(--black);color:#fff;padding:13px 16px 12px;flex:none;z-ind
       <span class="chip" data-f="csc">Clubes</span>
       <span class="chip" data-f="grow">Grow shops</span>
       <span class="chip" data-f="cbd">CBD</span>
+      <span class="chip" data-f="coffeeshop">Coffeeshop</span>
       <span class="chip" data-f="medicinal">Medicinal</span>
       <span class="chip" data-f="empresa">Empresas</span>
       <span class="chip soon" data-f="soon-academia">🔒 Academia</span>
@@ -431,9 +432,10 @@ const ICON={
  grow:'<svg viewBox="0 0 44 44" width="34" height="34"><path d="M22 41 V24" stroke="#141414" stroke-width="2.6" fill="none" stroke-linecap="round"/><g fill="#FFD400" stroke="#141414" stroke-width="2.2" stroke-linejoin="round"><path d="M22 25 C14 24 8 16 9 7 C18 8 24 16 22 25Z"/><path d="M22 25 C30 24 36 16 35 7 C26 8 20 16 22 25Z"/><path d="M22 27 C16 27 11 22 11 16 C18 16 23 21 22 27Z"/><path d="M22 27 C28 27 33 22 33 16 C26 16 21 21 22 27Z"/><path d="M22 28 C19 24 19 18 22 13 C25 18 25 24 22 28Z"/></g></svg>',
  cbd:'<svg viewBox="0 0 44 44" width="34" height="34"><path d="M22 4 C22 4 36 20 36 29 A14 14 0 0 1 8 29 C8 20 22 4 22 4Z" fill="#9013FE" stroke="#141414" stroke-width="3" stroke-linejoin="round"/><circle cx="22" cy="28" r="6" fill="#fff" stroke="#141414" stroke-width="2.4"/><circle cx="23.5" cy="29" r="2.6" fill="#141414"/></svg>',
  medicinal:'<svg viewBox="0 0 44 44" width="34" height="34"><circle cx="22" cy="22" r="18" fill="#2f7d4f" stroke="#141414" stroke-width="3"/><path d="M22 13 V31 M13 22 H31" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg>',
- empresa:'<svg viewBox="0 0 44 44" width="34" height="34"><path d="M22 6 L37 13 V31 L22 38 L7 31 V13 Z" fill="#e0a05a" stroke="#141414" stroke-width="2.6" stroke-linejoin="round"/><path d="M7 13 L22 20 L37 13" fill="none" stroke="#141414" stroke-width="2.2" stroke-linejoin="round"/><path d="M22 20 V38" fill="none" stroke="#141414" stroke-width="2.2"/></svg>'
+ empresa:'<svg viewBox="0 0 44 44" width="34" height="34"><path d="M22 6 L37 13 V31 L22 38 L7 31 V13 Z" fill="#e0a05a" stroke="#141414" stroke-width="2.6" stroke-linejoin="round"/><path d="M7 13 L22 20 L37 13" fill="none" stroke="#141414" stroke-width="2.2" stroke-linejoin="round"/><path d="M22 20 V38" fill="none" stroke="#141414" stroke-width="2.2"/></svg>',
+ coffeeshop:'<svg viewBox="0 0 44 44" width="34" height="34"><path d="M9 18 H31 V27 A9 9 0 0 1 13 27 Z" fill="#E4572E" stroke="#141414" stroke-width="2.6" stroke-linejoin="round"/><path d="M31 20 H35 A3.5 3.5 0 0 1 35 27 H31" fill="none" stroke="#141414" stroke-width="2.4"/><path d="M20 16 C17 13 23 11 20 8" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round"/><path d="M20 16 C23 12 28 13 30 10 C27 9 22 10 20 16Z" fill="#5aa845" stroke="#141414" stroke-width="1.6" stroke-linejoin="round"/></svg>'
 };
-const TYPE={csc:{tint:"#FFF7D6",pin:"#FFD400",label:"Club Social",svg:ICON.csc},grow:{tint:"#EFEFE7",pin:"#141414",label:"Grow shop",svg:ICON.grow},cbd:{tint:"#F2E8FF",pin:"#9013FE",label:"Tienda CBD",svg:ICON.cbd},medicinal:{tint:"#E8F3EC",pin:"#2f7d4f",label:"Medicinal",svg:ICON.medicinal},empresa:{tint:"#FBEFE0",pin:"#c8732e",label:"Empresa",svg:ICON.empresa}};
+const TYPE={csc:{tint:"#FFF7D6",pin:"#FFD400",label:"Club Social",svg:ICON.csc},grow:{tint:"#EFEFE7",pin:"#141414",label:"Grow shop",svg:ICON.grow},cbd:{tint:"#F2E8FF",pin:"#9013FE",label:"Tienda CBD",svg:ICON.cbd},medicinal:{tint:"#E8F3EC",pin:"#2f7d4f",label:"Medicinal",svg:ICON.medicinal},empresa:{tint:"#FBEFE0",pin:"#c8732e",label:"Empresa",svg:ICON.empresa},coffeeshop:{tint:"#FBE4DC",pin:"#E4572E",label:"Coffeeshop",svg:ICON.coffeeshop}};
 let filter="all",query="",selPais="",selCcaa="",selProv="",markers=[],map=null;
 let geoOn=false,userLat=null,userLng=null,userMarker=null;
 function starStr(r){const f=Math.round(r);return "★★★★★".slice(0,f)+"☆☆☆☆☆".slice(0,5-f);}
@@ -441,7 +443,7 @@ function dist(la1,lo1,la2,lo2){var R=6371,dLa=(la2-la1)*Math.PI/180,dLo=(lo2-lo1
 
 function visible(){
   return CLUBS.filter(function(c){
-    if((filter==="csc"||filter==="grow"||filter==="cbd"||filter==="medicinal"||filter==="empresa") && c.type!==filter) return false;
+    if((filter==="csc"||filter==="grow"||filter==="cbd"||filter==="medicinal"||filter==="empresa"||filter==="coffeeshop") && c.type!==filter) return false;
     if(selPais && (c.country||"España")!==selPais) return false;
     if(selCcaa && c.ccaa!==selCcaa) return false;
     if(selProv && c.prov!==selProv) return false;
