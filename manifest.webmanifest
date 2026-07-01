@@ -1,9 +1,9 @@
 {
   "name": "Brosin",
   "short_name": "Brosin",
-  "description": "Mapa de clubes sociales de cannabis, grow shops y tiendas de CBD de toda España. Solo +18.",
-  "start_url": ".",
-  "scope": ".",
+  "description": "El mapa de la cultura cannábica: clubes sociales, coffeeshops, grow shops y tiendas de CBD de España, Portugal y Europa. Solo +18.",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#141414",
