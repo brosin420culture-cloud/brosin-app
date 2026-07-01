@@ -1,5 +1,5 @@
 /* Service worker · network-first (siempre datos frescos, con copia de reserva offline) */
-const CACHE='brosin-v3';
+const CACHE='brosin-v4';
 self.addEventListener('install',function(e){ self.skipWaiting(); });
 self.addEventListener('activate',function(e){
   e.waitUntil(caches.keys().then(function(ks){
