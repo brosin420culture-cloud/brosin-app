@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0A0A0A">
+<meta name="theme-color" content="#FFFFFF">
 <title>Brosin · Muy pronto</title>
 <link rel="icon" href="assets/favicon-48.png" type="image/png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<script>(function(){try{var t=localStorage.getItem('brosin_theme');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){document.documentElement.setAttribute('data-theme','light');}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
@@ -17,38 +18,60 @@
   --carbon:#121212; --panal:#2A2A2A; --humo:#BDBDBD;
   --font:'Poppins',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
   --r-chip:16px; --r-pill:999px;
+  /* Semánticas — MODO CLARO por defecto (tabla 4.3) */
+  --bg:#FFFFFF; --card:#FFFFFF; --borde:rgba(10,10,10,.10);
+  --texto:#0A0A0A; --texto-2:rgba(10,10,10,.62); --acento-txt:#0A0A0A;
+  --dots:radial-gradient(rgba(10,10,10,.07) 1.1px,transparent 1.2px);
+  --soon-bg:#FFD400; --soon-txt:#0A0A0A; --soon-bd:transparent;
+}
+html[data-theme="dark"]{
+  --bg:#0A0A0A; --card:#121212; --borde:#2A2A2A;
+  --texto:#FFFFFF; --texto-2:#BDBDBD; --acento-txt:#FFD400;
   --dots:radial-gradient(rgba(255,212,0,.09) 1.1px,transparent 1.2px);
+  --soon-bg:#121212; --soon-txt:#FFD400; --soon-bd:#2A2A2A;
 }
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:var(--negro);color:var(--blanco);font-family:var(--font);font-size:16px;line-height:1.6;
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--texto);font-family:var(--font);font-size:16px;line-height:1.6;
   display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-  padding:40px 20px;background-image:var(--dots);background-size:26px 26px}
+  padding:56px 20px 40px;background-image:var(--dots);background-size:26px 26px;transition:background .25s,color .25s}
 img{display:block}
 .logo{width:min(70vw,300px);height:auto;margin:0 auto 22px}
+html[data-theme="light"] .logo-dark{display:none}
+html[data-theme="dark"] .logo-light{display:none}
 .mascota{width:120px;height:auto;margin:0 auto 6px}
-.soon{display:inline-block;background:var(--carbon);border:1px solid var(--panal);border-radius:var(--r-pill);
-  padding:6px 16px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--amarillo)}
+.soon{display:inline-block;background:var(--soon-bg);border:1px solid var(--soon-bd);border-radius:var(--r-pill);
+  padding:6px 16px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--soon-txt)}
 h1{font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin:18px 0 8px;max-width:22ch}
-p.lead{color:var(--humo);max-width:42ch;margin:0 auto;font-size:15.5px}
+.rule{width:54px;height:6px;background:var(--amarillo);border-radius:var(--r-pill);margin:14px auto 2px}
+p.lead{color:var(--texto-2);max-width:42ch;margin:0 auto;font-size:15.5px}
 .cta{margin-top:30px;display:inline-block;background:var(--amarillo);color:var(--negro);font-weight:700;font-size:15px;
   letter-spacing:.04em;text-transform:uppercase;padding:16px 26px;border-radius:var(--r-chip);text-decoration:none}
-.sub{margin-top:12px;color:var(--humo);font-size:13.5px;max-width:34ch}
-.contact{margin-top:34px;color:var(--blanco);font-size:14px;line-height:2}
-.contact b{color:var(--amarillo)}
-.firma{margin-top:28px;font-size:13px;font-weight:700;color:var(--humo)}
-.legal{margin-top:14px;font-size:11.5px;color:var(--humo);opacity:.7;max-width:44ch}
+.sub{margin-top:12px;color:var(--texto-2);font-size:13.5px;max-width:34ch}
+.contact{margin-top:34px;color:var(--texto);font-size:14px;line-height:2.1}
+.contact b{color:var(--negro);background:var(--amarillo);padding:1px 8px;border-radius:6px}
+html[data-theme="dark"] .contact b{color:var(--amarillo);background:transparent;padding:0}
+.firma{margin-top:28px;font-size:13px;font-weight:700;color:var(--texto-2)}
+.legal{margin-top:14px;font-size:11.5px;color:var(--texto-2);opacity:.85;max-width:44ch}
 a.cta:focus-visible{outline:2px solid var(--amarillo);outline-offset:3px}
+/* Controles tema + idioma */
+#brosinCtrls{position:fixed;top:12px;right:12px;z-index:9998;display:flex;gap:8px;align-items:center}
+#brosinTheme{width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:var(--card);border:1px solid var(--borde);border-radius:var(--r-pill);color:var(--texto);cursor:pointer;padding:0}
+#brosinTheme svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+#brosinLang{font-family:var(--font);font-size:13px;font-weight:600;background:var(--card);color:var(--texto);border:1px solid var(--borde);border-radius:var(--r-pill);padding:7px 12px;cursor:pointer}
+#brosinTheme:focus-visible,#brosinLang:focus-visible{outline:2px solid var(--amarillo);outline-offset:2px}
 </style>
 </head>
 <body>
-  <img class="logo" src="assets/logo-amarillo.png" alt="Brosin">
+  <img class="logo logo-dark" src="assets/logo-amarillo.png" alt="Brosin">
+  <img class="logo logo-light" src="assets/logo-negro.png" alt="Brosin">
   <img class="mascota" src="assets/mascotas/abeja.png" alt="">
-  <div class="soon">Muy pronto</div>
-  <h1>El mapa de la cultura cannábica está en camino</h1>
-  <p class="lead">Clubes, coffeeshops, grow shops y tiendas de CBD de España, Portugal y toda Europa. Le estamos dando los últimos toques.</p>
+  <div class="soon" data-i18n="soon">Muy pronto</div>
+  <h1 data-i18n="mp_h1">El mapa de la cultura cannábica está en camino</h1>
+  <div class="rule"></div>
+  <p class="lead" data-i18n="mp_lead">Clubes, coffeeshops, grow shops y tiendas de CBD de España, Portugal y toda Europa. Le estamos dando los últimos toques.</p>
 
-  <a class="cta" href="formulario.html">¿Tienes un local? Añádelo gratis →</a>
-  <div class="sub">Club, grow shop o tienda de CBD: entra antes que nadie en el mapa. Es gratis.</div>
+  <a class="cta" href="formulario.html" data-i18n="mp_cta">¿Tienes un local? Añádelo gratis →</a>
+  <div class="sub" data-i18n="mp_sub">Club, grow shop o tienda de CBD: entra antes que nadie en el mapa. Es gratis.</div>
 
   <div class="contact">
     <b>hola@brosin.app</b><br>
@@ -57,6 +80,8 @@ a.cta:focus-visible{outline:2px solid var(--amarillo);outline-offset:3px}
   </div>
 
   <div class="firma">Bro, no te quedes sin, Brosin.</div>
-  <div class="legal">Guía informativa · aquí no se vende cannabis · solo mayores de 18 años · consume con responsabilidad</div>
+  <div class="legal" data-i18n="legal_mini">Guía informativa · aquí no se vende cannabis · solo mayores de 18 años · consume con responsabilidad</div>
+
+  <script src="brosin-i18n.js?v=2"></script>
 </body>
 </html>
