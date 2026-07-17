@@ -3,28 +3,127 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0A0A0A">
 <title>Brosin · Añade tu local</title>
-<meta http-equiv="refresh" content="0; url=https://docs.google.com/forms/d/e/1FAIpQLScSr4NrxgJ2Bp2ivxi8VwDqEUVuJJ52pqDle6Rhk2hsioQovw/viewform">
-<link rel="canonical" href="https://docs.google.com/forms/d/e/1FAIpQLScSr4NrxgJ2Bp2ivxi8VwDqEUVuJJ52pqDle6Rhk2hsioQovw/viewform">
-<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="assets/favicon-48.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root{--yellow:#FFD400;--black:#141414;--soft:#cfcfcf}
+/* BROSIN · tokens del Manual de Marca v3 (cap. 8.2) */
+:root{
+  --amarillo:#FFD400; --negro:#0A0A0A; --blanco:#FFFFFF; --morado:#9013FE;
+  --carbon:#121212; --panal:#2A2A2A; --humo:#BDBDBD;
+  --font:'Poppins',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  --r-card:22px; --r-chip:16px; --r-pill:999px;
+  --dots:radial-gradient(rgba(255,212,0,.09) 1.1px,transparent 1.2px);
+}
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 0%,#243018,#141414 72%);color:#fff;font-family:'Poppins',system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:34px 20px;background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);background-size:16px 16px}
-.brand{font-family:'Bagel Fat One',cursive;color:var(--yellow);font-size:2.4rem;line-height:1}
-.msg{margin-top:16px;font-size:1.05rem;color:var(--soft)}
-.spin{margin:22px auto;width:34px;height:34px;border:4px solid rgba(255,255,255,.2);border-top-color:var(--yellow);border-radius:50%;animation:sp 1s linear infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
-.btn{margin-top:10px;background:var(--yellow);color:var(--black);font-weight:800;font-size:1rem;padding:14px 24px;border-radius:999px;text-decoration:none}
-.tag{margin-top:26px;font-size:.8rem;color:#8fa383;font-style:italic}
+body{margin:0;background:var(--negro);color:var(--blanco);font-family:var(--font);font-size:16px;line-height:1.6}
+img{display:block}
+.wrap{max-width:640px;margin:0 auto;padding:0 16px 90px}
+header{background:var(--negro);padding:30px 16px 26px;text-align:center;background-image:var(--dots);background-size:26px 26px;border-bottom:1px solid var(--panal)}
+header .logo{width:min(52vw,230px);height:auto;margin:0 auto 14px}
+header h1{font-size:20px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin:0}
+header p{margin:10px auto 0;max-width:52ch;font-size:14.5px;color:var(--humo)}
+header p b{color:var(--blanco)}
+.intro{background:var(--carbon);border:1px solid var(--panal);border-left:4px solid var(--amarillo);color:var(--humo);border-radius:0 var(--r-chip) var(--r-chip) 0;padding:13px 16px;font-size:14px;margin:18px 0}
+.intro b{color:var(--blanco)}
+.card{background:var(--carbon);border:1px solid var(--panal);border-radius:var(--r-card);padding:20px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{display:block;font-size:12.5px;font-weight:700;margin:10px 0 4px;color:var(--humo)}
+label .req{color:var(--amarillo)}
+input,select,textarea{width:100%;font-family:inherit;font-size:16px;padding:12px;border:1px solid var(--panal);border-radius:var(--r-chip);background:var(--negro);color:var(--blanco)}
+input::placeholder,textarea::placeholder{color:var(--humo);opacity:.6}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--amarillo)}
+select option{background:var(--carbon);color:var(--blanco)}
+textarea{resize:vertical;min-height:80px}
+.full{grid-column:1/-1}
+.consent{display:flex;gap:10px;align-items:flex-start;background:var(--negro);border:1px solid var(--panal);border-radius:var(--r-chip);padding:13px 14px;margin-top:16px;font-size:13.5px;color:var(--humo)}
+.consent b{color:var(--blanco)}
+.consent input{width:auto;margin-top:3px;flex:none;accent-color:var(--amarillo)}
+.btn{width:100%;margin-top:16px;background:var(--amarillo);color:var(--negro);font-family:inherit;font-weight:700;font-size:15px;letter-spacing:.04em;text-transform:uppercase;border:none;border-radius:var(--r-chip);padding:16px;cursor:pointer}
+.btn:disabled{opacity:.6;cursor:default}
+.legal{font-size:12px;color:var(--humo);margin-top:12px;text-align:center;opacity:.85}
+.ok{display:none;text-align:center;background:var(--carbon);border:1px solid var(--panal);color:var(--blanco);border-radius:var(--r-card);padding:40px 24px;background-image:var(--dots);background-size:26px 26px}
+.ok img{height:130px;width:auto;margin:0 auto 8px}
+.ok h2{color:var(--blanco);font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin:10px 0}
+.ok p{color:var(--humo);max-width:36ch;margin:0 auto}
+.ok .pill{display:inline-block;margin-top:16px;background:var(--negro);border:1px solid var(--panal);border-radius:var(--r-pill);padding:6px 15px;font-size:11.5px;font-weight:700;color:var(--amarillo)}
+.err{display:none;background:#241012;border:1px solid #5a2626;color:#ff8a8a;border-radius:var(--r-chip);padding:12px 14px;font-size:14px;margin-top:12px;text-align:center}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--amarillo);outline-offset:2px}
+@media(max-width:560px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-  <div class="brand">🐝 BROSIN</div>
-  <div class="msg">Abriendo el formulario para añadir tu local…</div>
-  <div class="spin"></div>
-  <a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLScSr4NrxgJ2Bp2ivxi8VwDqEUVuJJ52pqDle6Rhk2hsioQovw/viewform">Si no se abre solo, pulsa aquí →</a>
-  <div class="tag">bro, no te quedes sin 🐝</div>
-<script>window.location.replace("https://docs.google.com/forms/d/e/1FAIpQLScSr4NrxgJ2Bp2ivxi8VwDqEUVuJJ52pqDle6Rhk2hsioQovw/viewform");</script>
+<header>
+  <img class="logo" src="assets/logo-amarillo.png" alt="Brosin">
+  <h1>Añade tu local a Brosin</h1>
+  <p>Rellena los datos de tu club, grow shop o tienda de CBD. Es <b>gratis</b> salir en el mapa. Al enviar, nos llegan directamente y te contactamos.</p>
+</header>
+<div class="wrap">
+  <div class="intro">Lo imprescindible es <b>nombre, tipo, ciudad y dirección</b>. El resto mejora tu ficha pero puede ir vacío.</div>
+
+  <form id="f" class="card" action="https://formsubmit.co/ajax/hola@brosin.app" method="POST">
+    <input type="hidden" name="_subject" value="Nuevo local para Brosin">
+    <input type="hidden" name="_template" value="table">
+    <input type="hidden" name="_captcha" value="false">
+    <div class="grid">
+      <div class="full"><label>Nombre del local <span class="req">*</span></label><input name="Nombre" required placeholder="Ej: Brosin CSC"></div>
+      <div><label>Tipo <span class="req">*</span></label>
+        <select name="Tipo" required>
+          <option value="">Elige…</option>
+          <option>Club Social de Cannabis (CSC)</option>
+          <option>Grow shop</option>
+          <option>Tienda de CBD</option>
+          <option>Coffeeshop</option>
+          <option>Medicinal</option>
+          <option>Empresa del sector</option>
+        </select>
+      </div>
+      <div><label>¿Acceso solo adultos?</label>
+        <select name="Solo adultos"><option value="">No indicar</option><option>+18</option><option>+21</option></select>
+      </div>
+      <div><label>Ciudad <span class="req">*</span></label><input name="Ciudad" required placeholder="Ej: Torre del Mar"></div>
+      <div><label>Provincia</label><input name="Provincia" placeholder="Ej: Málaga"></div>
+      <div class="full"><label>Dirección completa <span class="req">*</span></label><input name="Direccion" required placeholder="Calle, número, CP, ciudad"></div>
+      <div><label>Teléfono / WhatsApp</label><input name="Telefono" placeholder="Ej: 600 000 000"></div>
+      <div><label>Email de contacto</label><input type="email" name="Email" placeholder="tucorreo@ejemplo.com"></div>
+      <div><label>Horario</label><input name="Horario" placeholder="Ej: L–S 12:00–23:30"></div>
+      <div><label>Instagram / Web</label><input name="Instagram o web" placeholder="Ej: @tuclub o tuweb.es"></div>
+      <div class="full"><label>Descripción corta</label><textarea name="Descripcion" placeholder="Ambiente, qué ofreces…"></textarea></div>
+    </div>
+
+    <label class="consent">
+      <input type="checkbox" name="Consentimiento" value="Sí, soy responsable y autorizo aparecer en Brosin" required>
+      <span>Soy responsable de este local y <b>autorizo</b> que aparezca en Brosin con estos datos. He leído que puedo pedir la baja cuando quiera escribiendo a hola@brosin.app.</span>
+    </label>
+
+    <button class="btn" type="submit" id="btn">Enviar mi local a Brosin</button>
+    <div class="err" id="err">Ups, algo falló al enviar. Inténtalo de nuevo o escríbenos a hola@brosin.app.</div>
+    <div class="legal">Tus datos se tratan conforme al RGPD solo para gestionar tu alta en Brosin. Responsable: Brosin · hola@brosin.app. Solo +18.</div>
+  </form>
+
+  <div class="ok" id="ok">
+    <img src="assets/mascotas/abeja.png" alt="">
+    <h2>¡Recibido, bro!</h2>
+    <p>Ya tenemos tu local. Le echamos un ojo y te contactamos para dejarlo perfecto en el mapa. ¡Gracias por sumarte a la colmena!</p>
+    <div><span class="pill">Bro, no te quedes sin, Brosin.</span></div>
+  </div>
+</div>
+
+<script>
+var f=document.getElementById('f');
+f.addEventListener('submit',function(e){
+  e.preventDefault();
+  var btn=document.getElementById('btn'); var err=document.getElementById('err');
+  err.style.display='none'; btn.disabled=true; btn.textContent='Enviando…';
+  fetch(f.action,{method:'POST',body:new FormData(f),headers:{'Accept':'application/json'}})
+  .then(function(r){ return r.json().catch(function(){return {};}); })
+  .then(function(){ f.style.display='none'; document.getElementById('ok').style.display='block'; window.scrollTo({top:0,behavior:'smooth'}); })
+  .catch(function(){ err.style.display='block'; btn.disabled=false; btn.textContent='Enviar mi local a Brosin'; });
+});
+</script>
 </body>
 </html>
