@@ -1,0 +1,17 @@
+{
+  "name": "Brosin",
+  "short_name": "Brosin",
+  "description": "El mapa de la cultura cannábica: clubes sociales, coffeeshops, grow shops y tiendas de CBD de España, Portugal y Europa. Solo +18.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A0A0A",
+  "theme_color": "#0A0A0A",
+  "lang": "es",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
