@@ -7,7 +7,7 @@
    Si algo fuera mal, sustituye este archivo por sw-limpieza.js:
    ese desregistra el service worker y borra todo.
    =========================================================== */
-var VERSION = 'brosin-preview-2137-3';
+var VERSION = 'brosin-preview-2137-4';
 var SHELL = [
   './', './index.html', './clubs-data.js', './brosin-cluster.js', './brosin-i18n.js', './brosin-app-i18n.js', './brosin-saber.js',
   './manifest.webmanifest', './formulario.html',

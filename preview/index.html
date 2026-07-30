@@ -292,11 +292,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   <div id="agegate">
     <div class="agbox">
       <img class="logo" src="assets/logo-amarillo.png" alt="Brosin">
-      <h2>¿Eres mayor de edad?</h2>
-      <p>Guía informativa sobre clubes sociales privados, grow shops y tiendas de CBD. Aquí <b>no se vende cannabis</b>. Solo para mayores de 18 años.</p>
+      <h2 data-t="ag_h">¿Eres mayor de edad?</h2>
+      <p id="agP">Guía informativa sobre clubes sociales privados, grow shops y tiendas de CBD. Aquí <b>no se vende cannabis</b>. Solo para mayores de 18 años.</p>
       <div class="agbtns">
-        <button class="agyes" onclick="ageOk()">Sí, soy mayor de 18</button>
-        <a class="agno" href="https://www.google.com">No, salir</a>
+        <button class="agyes" onclick="ageOk()" data-t="ag_si">Sí, soy mayor de 18</button>
+        <a class="agno" href="https://www.google.com" data-t="ag_no">No, salir</a>
       </div>
       <p class="agleg">Consume con responsabilidad · Brosin promueve la reducción de riesgos</p>
     </div>
@@ -329,7 +329,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
     </div>
   </header>
 
-  <div class="banner" id="banner"><b>Toda España</b> — colmena Brosin + grow shops y tiendas CBD (datos públicos, en verificación)</div>
+  <div class="banner" id="banner"></div>
 
   <div id="map"></div>
   <div id="mapfallback">El mapa con calles necesita conexión a internet.<br>La lista funciona igual sin él.</div>
@@ -337,9 +337,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   <div class="list">
     <div class="count" id="count"></div>
     <div id="clubs"></div>
-    <div class="foot-tag">una colmena, muchos panales · [nombre] by Brosin<br>Guía informativa · aquí no se vende cannabis · solo +18 · consume con responsabilidad</div>
+    <div class="foot-tag"><span data-t="pie_lema">una colmena, muchos panales</span><br><span data-t="pie_legal">Guía informativa · aquí no se vende cannabis · solo +18 · consume con responsabilidad</span></div>
     <div class="foot-sign"><img src="assets/ojo-amarillo.png" alt="" class="blinky"><span>BROSIN</span></div>
-    <div class="flinks"><a onclick="goView('nosotros')">Sobre nosotros</a><span>·</span><a onclick="goView('empresarios')">Para empresarios</a><span>·</span><a onclick="goView('legal')">Aviso legal</a></div>
+    <div class="flinks"><a onclick="goView('nosotros')" data-t="nav_nosotros">Sobre nosotros</a><span>·</span><a onclick="goView('empresarios')" data-t="nav_empresarios">Para empresarios</a><span>·</span><a onclick="goView('legal')" data-t="nav_legal">Aviso legal</a></div>
   </div>
 
   <a class="fab" id="fab" href="formulario.html" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span data-t="anade">Añade tu local</span></a>
@@ -619,6 +619,7 @@ function renderList(){
   var data=visible();
   if(geoOn && userLat!=null){ data=data.map(function(c){var o={};for(var k in c)o[k]=c[k];o._d=dist(userLat,userLng,c.lat,c.lng);return o;}).sort(function(a,b){return a._d-b._d;}); }
   countEl.textContent=data.length+" "+(data.length===1?T('local'):T('locales'))+(geoOn?" · "+T('por_cercania'):"");
+  renderBanner();
   if(!data.length){
     wrap.innerHTML='<div class="empty">'+(filter==='fav'
       ? esc(T('sin_favs'))
@@ -894,8 +895,28 @@ function renderSaber(){
 }
 
 /* ── Idioma de la app ───────────────────────────────────────────── */
+/* El banner decía siempre "Toda España", aunque la app tiene locales en
+   8 países y aunque estuvieras filtrando por una provincia concreta. */
+function renderBanner(){
+  var el=document.getElementById('banner'); if(!el) return;
+  var data=visible();
+  var zona;
+  if(selProv) zona=selProv;
+  else if(selCcaa) zona=selCcaa;
+  else if(selPais) zona=selPais;
+  else {
+    var paises=Array.from(new Set(data.map(paisOf)));
+    zona = paises.length>1 ? T('toda_europa') : (paises[0]===T('paises')?T('toda_espana'):(paises[0]||T('toda_espana')));
+    if(paises.length===1 && paises[0]==='España') zona=T('toda_espana');
+  }
+  el.innerHTML='<b>'+esc(zona)+'</b> — '+data.length+' '+
+    (data.length===1?T('local'):T('locales'))+' · '+esc(T('datos_verif'));
+}
+
 function applyLang(){
   if(!window.BrosinApp) return;
+  var agp=document.getElementById('agP'); if(agp) agp.innerHTML=T('ag_p');
+  var agl=document.querySelector('.agleg'); if(agl) agl.textContent=T('ag_pie');
   document.documentElement.setAttribute('lang', BrosinApp.lang());
   document.querySelectorAll('[data-t]').forEach(function(el){
     var v=T(el.getAttribute('data-t')); if(v) el.textContent=v;
@@ -926,6 +947,7 @@ function changeLang(v){
 buildFilters();
 applyLang();
 renderSaber();
+renderBanner();
 updateFavChip();
 renderList();
 /* Enlace directo a una ficha: brosin.app/#local-123
