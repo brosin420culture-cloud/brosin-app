@@ -386,62 +386,16 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
     </div>
   </div>
 
-  <!-- VIEW: SOBRE NOSOTROS -->
+  <!-- VIEW: SOBRE NOSOTROS · contenido en brosin-paginas.js (9 idiomas) -->
   <div class="view" id="view-nosotros">
-    <div class="vhead with-back"><button class="vback" onclick="goView('mapa')">‹</button><div class="vh-title">Sobre nosotros</div></div>
-    <div class="page">
-      <div class="lead2">Brosin nació en <b>2018 en Torre del Mar (Málaga)</b>, fundado por dos amigos con un sueño común: crear un club social de fumadores diferente, donde la <b>calidad</b> y la <b>comunidad</b> fueran lo primero.</div>
-      <div class="quote2">"B" de be, de ser. Rosin, la resina. Bee, la abeja.<br><i>Bro, no te quedes sin, Brosin.</i></div>
-      <p>De aquel primer local nació una colmena: hoy somos varios espacios <b>«[nombre] by Brosin»</b> por la Costa del Sol y la Costa Tropical, siempre con el mismo ojo, la misma sonrisa y el mismo buen rollo.</p>
-      <h3>Qué es esta app</h3>
-      <p>Brosin es el mapa de referencia para encontrar <b>clubes sociales, grow shops y tiendas de CBD</b> de toda España, con información veraz y reducción de riesgos. No vendemos cannabis: somos una guía informativa y de comunidad.</p>
-      <h3>Misión</h3>
-      <p>Que la comunidad cannábica se reúna sin prejuicios, con calidad real, ambiente relajado y la cercanía de un colega — sin importar tu edad, tu estilo de vida o cuánto sepas del mundo del cannabis.</p>
-      <h3>Visión</h3>
-      <p>Ser la marca de clubes sociales de cannabis más reconocible de España, y el referente en Europa, sin perder nunca la esencia de barrio con la que nació en Torre del Mar.</p>
-      <h3>Lo que no se negocia</h3>
-      <div class="vals">
-        <div class="val"><b>Calidad sin atajos</b>El producto, el local y hasta el vaso, cuidados al detalle.</div>
-        <div class="val"><b>Natural, como la miel</b>Hablamos claro, sin artificios ni postureo.</div>
-        <div class="val"><b>Atrevida con criterio</b>Más allá de lo esperado, sin volverse ruido.</div>
-        <div class="val"><b>La colmena primero</b>El socio de 20 y el de 85 comparten mesa y se sienten en casa.</div>
-      </div>
-      <p class="small">Brosin promueve el consumo responsable y la reducción de riesgos. Solo +18.</p>
-    </div>
+    <div class="vhead with-back"><button class="vback" onclick="goView('mapa')">‹</button><div class="vh-title" id="nosT">Sobre nosotros</div></div>
+    <div class="page" id="nosBody"></div>
   </div>
 
-  <!-- VIEW: PARA EMPRESARIOS -->
+  <!-- VIEW: PARA EMPRESARIOS · contenido en brosin-paginas.js (9 idiomas) -->
   <div class="view" id="view-empresarios">
-    <div class="vhead with-back"><button class="vback" onclick="goView('mapa')">‹</button><div class="vh-title">Para empresarios</div><div class="vh-sub">Sal en el mapa de referencia</div></div>
-    <div class="page">
-      <div class="lead2">¿Tienes un <b>club social, grow shop o tienda de CBD</b>? Aparece en Brosin y llega a la gente que justo está buscando lo que ofreces. <b>Empezar es gratis.</b></div>
-      <h3>Por qué estar en Brosin</h3>
-      <ul>
-        <li><b>Visibilidad gratis</b> ante una comunidad que busca clubes, grows y CBD.</li>
-        <li>Apareces en el <b>mapa de tu zona</b> y en las búsquedas y filtros por provincia.</li>
-        <li>Podrás <b>publicar tus eventos y promociones</b> (muy pronto).</li>
-        <li>Formas parte de una <b>marca con identidad</b> y una comunidad real.</li>
-      </ul>
-      <h3>Tarifas</h3>
-      <div class="tier">
-        <h4>Básico <span class="badge gris">Gratis</span></h4>
-        <div class="price">0 €</div>
-        <ul><li>Ficha verificada en el mapa</li><li>Datos de contacto y horario</li><li>Apareces en búsquedas y filtros</li></ul>
-      </div>
-      <div class="tier feat">
-        <h4>Destacado <span class="badge">El más elegido</span></h4>
-        <div class="price">39 € <small>/ mes</small></div>
-        <ul><li>Todo lo del plan Básico</li><li>Fotos de tu local</li><li>Apareces el primero en tu ciudad</li><li>Publica tus eventos y promociones</li><li>Estadísticas de cuánta gente te ve</li></ul>
-      </div>
-      <div class="tier">
-        <h4>Premium <span class="badge beeher">A medida</span></h4>
-        <div class="price">A consultar</div>
-        <ul><li>Todo lo del plan Destacado</li><li>Posición destacada en tu provincia</li><li>Campañas y colaboraciones con Brosin</li></ul>
-      </div>
-      <p class="small">Tarifas orientativas, sujetas a cambios durante la fase de lanzamiento.</p>
-      <a class="ctabtn" href="formulario.html" target="_blank" rel="noopener">Añade tu local gratis</a>
-      <p class="small" style="text-align:center">¿Dudas? Escríbenos a <b>hola@brosin.app</b>, WhatsApp <b>644 46 61 34</b> o Instagram <b>@brosinculture</b>.</p>
-    </div>
+    <div class="vhead with-back"><button class="vback" onclick="goView('mapa')">‹</button><div class="vh-title" id="empT">Para empresarios</div><div class="vh-sub" id="empSub"></div></div>
+    <div class="page" id="empBody"></div>
   </div>
 
   <!-- VIEW: LEGAL -->
@@ -516,6 +470,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 <script src="brosin-cluster.js?v=1"></script>
 <script src="brosin-app-i18n.js?v=1"></script>
 <script src="brosin-saber.js?v=1"></script>
+<script src="brosin-paginas.js?v=1"></script>
 <script src="clubs-data.js?v=2137b"></script>
 <script>
 const CLUBS = window.CLUBS || [];
@@ -894,6 +849,44 @@ function renderSaber(){
   document.getElementById('sbBody').innerHTML=h;
 }
 
+/* ── Sobre nosotros y Para empresarios, desde los datos ─────────── */
+function renderPaginas(){
+  if(!window.BrosinPaginas) return;
+  var d=BrosinPaginas.get(window.BrosinApp?BrosinApp.lang():'es');
+
+  var n=d.nos;
+  document.getElementById('nosT').textContent=n.t;
+  document.getElementById('nosBody').innerHTML=
+    '<div class="lead2">'+n.lead+'</div>'+
+    '<div class="quote2">'+esc(n.quote)+'<br><i>'+esc(n.firma)+'</i></div>'+
+    '<p>'+n.p1+'</p>'+
+    '<h3>'+esc(n.h_app)+'</h3><p>'+n.p_app+'</p>'+
+    '<h3>'+esc(n.h_mis)+'</h3><p>'+esc(n.p_mis)+'</p>'+
+    '<h3>'+esc(n.h_vis)+'</h3><p>'+esc(n.p_vis)+'</p>'+
+    '<h3>'+esc(n.h_val)+'</h3><div class="vals">'+
+      n.vals.map(function(v){return '<div class="val"><b>'+esc(v[0])+'</b>'+esc(v[1])+'</div>';}).join('')+
+    '</div>'+
+    '<p class="small">'+esc(n.pie)+'</p>';
+
+  var e=d.emp;
+  document.getElementById('empT').textContent=e.t;
+  document.getElementById('empSub').textContent=e.sub;
+  document.getElementById('empBody').innerHTML=
+    '<div class="lead2">'+e.lead+'</div>'+
+    '<h3>'+esc(e.h_por)+'</h3><ul>'+e.por.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'+
+    '<h3>'+esc(e.h_tar)+'</h3>'+
+    e.planes.map(function(pl,i){
+      var cls=i===1?' feat':'';
+      var badge=i===0?' gris':(i===2?' beeher':'');
+      return '<div class="tier'+cls+'"><h4>'+esc(pl.n)+' <span class="badge'+badge+'">'+esc(pl.b)+'</span></h4>'+
+             '<div class="price">'+esc(pl.precio)+(pl.mes?' <small>'+esc(pl.mes)+'</small>':'')+'</div>'+
+             '<ul>'+pl.items.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div>';
+    }).join('')+
+    '<p class="small">'+esc(e.nota)+'</p>'+
+    '<a class="ctabtn" href="formulario.html" target="_blank" rel="noopener">'+esc(e.cta)+'</a>'+
+    '<p class="small" style="text-align:center">'+e.dudas+'</p>';
+}
+
 /* ── Idioma de la app ───────────────────────────────────────────── */
 /* El banner decía siempre "Toda España", aunque la app tiene locales en
    8 países y aunque estuvieras filtrando por una provincia concreta. */
@@ -937,7 +930,7 @@ function applyLang(){
 function changeLang(v){
   if(!window.BrosinApp) return;
   BrosinApp.setLang(v);
-  applyLang(); renderSaber(); buildFilters(); renderList(); drawMarkers(true);
+  applyLang(); renderSaber(); renderPaginas(); buildFilters(); renderList(); drawMarkers(true);
   var df=document.getElementById('dfav');
   if(document.getElementById('detail').classList.contains('show') && df && df.getAttribute('data-id')){
     openDetail(+df.getAttribute('data-id'));      // repinta la ficha en el idioma nuevo
@@ -947,6 +940,7 @@ function changeLang(v){
 buildFilters();
 applyLang();
 renderSaber();
+renderPaginas();
 renderBanner();
 updateFavChip();
 renderList();
