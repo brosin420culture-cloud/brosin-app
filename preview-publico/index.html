@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="robots" content="noindex,nofollow,noarchive">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -95,6 +94,8 @@ header{background:var(--negro);padding:12px 16px;flex:none;z-index:500;backgroun
 .tag{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:8px;background:var(--panal);color:var(--humo)}
 .tag.brosin{background:var(--amarillo);color:var(--negro)}
 .tag.ev{background:var(--morado);color:var(--blanco)}
+/* El local se dio de alta él mismo: se nota, pero sin gritar */
+.tag.alta{background:transparent;border:1px solid var(--amarillo);color:var(--amarillo);padding:2px 8px}
 .empty{text-align:center;color:var(--humo);padding:40px 20px;font-size:15px}
 
 /* ── Grupos de pines en el mapa ──────────────────── */
@@ -198,16 +199,13 @@ header{background:var(--negro);padding:12px 16px;flex:none;z-index:500;backgroun
 .vback{position:absolute;left:14px;top:20px;background:var(--amarillo);color:var(--negro);border:none;width:34px;height:34px;border-radius:50%;font-size:19px;font-weight:700;cursor:pointer;z-index:2;line-height:1}
 .vhead.with-back{padding-left:60px}
 
-/* Eventos bloqueado */
+/* Eventos: cerrado con candado, sin contenido falso detrás */
 .evlocked{position:relative;min-height:100%}
-.evblur{filter:blur(7px);pointer-events:none;padding:18px;opacity:.6}
-.fauxev{background:var(--carbon);border:1px solid var(--panal);border-radius:var(--r-chip);padding:12px;margin-bottom:11px;display:flex;gap:11px;align-items:center}
-.fauxev .fd{width:46px;height:46px;border-radius:12px;background:var(--amarillo);flex:none}
-.fauxev .fl{flex:1}
-.fauxev .l1{height:12px;background:var(--panal);border-radius:4px;width:70%;margin-bottom:8px}
-.fauxev .l2{height:9px;background:#3a3a3a;border-radius:4px;width:45%}
-.evover{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background:rgba(10,10,10,.55)}
+.evover{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
 .evover img{height:130px;width:auto}
+.evcandado{width:96px;height:96px;border-radius:50%;background:var(--carbon);border:1px solid var(--panal);
+  display:flex;align-items:center;justify-content:center;color:var(--amarillo)}
+.evcandado svg{width:44px;height:44px}
 .evover h3{color:var(--blanco);font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin:14px 0 6px}
 .evover p{color:var(--humo);font-size:14px;margin:0}
 
@@ -350,18 +348,19 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
     <div class="vbody" id="sbBody"></div>
   </div>
 
-  <!-- VIEW: EVENTOS (bloqueado) -->
+  <!-- VIEW: EVENTOS (cerrado)
+       Antes había aquí seis tarjetas falsas desenfocadas. Se han
+       quitado: enseñar contenido borroso da a entender que hay algo
+       detrás, y de momento no lo hay. Un candado y ya está. -->
   <div class="view" id="view-eventos">
     <div class="evlocked">
-      <div class="evblur">
-        <div class="fauxev"><div class="fd"></div><div class="fl"><div class="l1"></div><div class="l2"></div></div></div>
-        <div class="fauxev"><div class="fd"></div><div class="fl"><div class="l1"></div><div class="l2"></div></div></div>
-        <div class="fauxev"><div class="fd"></div><div class="fl"><div class="l1"></div><div class="l2"></div></div></div>
-        <div class="fauxev"><div class="fd"></div><div class="fl"><div class="l1"></div><div class="l2"></div></div></div>
-        <div class="fauxev"><div class="fd"></div><div class="fl"><div class="l1"></div><div class="l2"></div></div></div>
-        <div class="fauxev"><div class="fd"></div><div class="fl"><div class="l1"></div><div class="l2"></div></div></div>
+      <div class="evover">
+        <div class="evcandado" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        </div>
+        <h3 data-t="muy_pronto">Muy pronto</h3>
+        <p data-t="ev_cerrado">Los eventos de la colmena. Todavía no está abierto.</p>
       </div>
-      <div class="evover"><img src="assets/mascotas/gominola.png" alt=""><h3>Muy pronto</h3><p>Los eventos de la colmena, aquí.</p></div>
     </div>
   </div>
 
@@ -598,7 +597,10 @@ function cardHtml(c){
   return '<div class="club" onclick="openDetail('+c.id+')"><div class="thumb" style="background:'+TY.tint+';color:'+TY.ic+bstyle+'">'+TY.svg+'</div>'+
     '<div class="info"><div class="nm">'+esc(c.name)+(c.verified?' <span class="verif">✓</span>':'')+'</div>'+
     '<div class="meta">'+(c.rating>0?'<span class="stars">'+starStr(c.rating)+'</span> '+c.rating.toFixed(1):'<span class="nuevo">'+T('nuevo')+'</span>')+' · '+esc(c.city)+' · '+esc(c.prov)+dt+'</div>'+
-    '<div class="tags">'+brz+'<span class="tag">'+esc(typeLabel(c.type))+'</span>'+(c.tags||[]).map(function(t){return '<span class="tag">'+esc(t)+'</span>';}).join('')+ev+'</div></div>'+
+    /* "Alta verificada" se guarda en castellano en los datos, pero se
+       enseña en el idioma de quien mira: es lo que distingue a los
+       locales que se dieron de alta ellos mismos. */
+    '<div class="tags">'+brz+'<span class="tag">'+esc(typeLabel(c.type))+'</span>'+(c.tags||[]).map(function(t){return '<span class="tag'+(t==='Alta verificada'?' alta':'')+'">'+esc(t==='Alta verificada'?T('tag_alta'):t)+'</span>';}).join('')+ev+'</div></div>'+
     '<button class="favbtn'+(FAVS.has(c.id)?' on':'')+'" data-id="'+c.id+'" onclick="toggleFav('+c.id+',this,event)" aria-label="Guardar en favoritos">'+HEART+'</button></div>';
 }
 function appendChunk(){
