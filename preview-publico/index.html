@@ -93,7 +93,6 @@ header{background:var(--negro);padding:12px 16px;flex:none;z-index:500;backgroun
 .tags{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
 .tag{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:8px;background:var(--panal);color:var(--humo)}
 .tag.brosin{background:var(--amarillo);color:var(--negro)}
-.tag.ev{background:var(--morado);color:var(--blanco)}
 /* El local se dio de alta él mismo: se nota, pero sin gritar */
 .tag.alta{background:transparent;border:1px solid var(--amarillo);color:var(--amarillo);padding:2px 8px}
 .empty{text-align:center;color:var(--humo);padding:40px 20px;font-size:15px}
@@ -199,13 +198,6 @@ header{background:var(--negro);padding:12px 16px;flex:none;z-index:500;backgroun
 .vback{position:absolute;left:14px;top:20px;background:var(--amarillo);color:var(--negro);border:none;width:34px;height:34px;border-radius:50%;font-size:19px;font-weight:700;cursor:pointer;z-index:2;line-height:1}
 .vhead.with-back{padding-left:60px}
 
-/* Eventos: cerrado con candado, sin contenido falso detrás */
-.evlocked{position:relative;min-height:100%}
-.evover{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
-.evover img{height:130px;width:auto}
-.evcandado{width:96px;height:96px;border-radius:50%;background:var(--carbon);border:1px solid var(--panal);
-  display:flex;align-items:center;justify-content:center;color:var(--amarillo)}
-.evcandado svg{width:44px;height:44px}
 .evover h3{color:var(--blanco);font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin:14px 0 6px}
 .evover p{color:var(--humo);font-size:14px;margin:0}
 
@@ -348,22 +340,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
     <div class="vbody" id="sbBody"></div>
   </div>
 
-  <!-- VIEW: EVENTOS (cerrado)
-       Antes había aquí seis tarjetas falsas desenfocadas. Se han
-       quitado: enseñar contenido borroso da a entender que hay algo
-       detrás, y de momento no lo hay. Un candado y ya está. -->
-  <div class="view" id="view-eventos">
-    <div class="evlocked">
-      <div class="evover">
-        <div class="evcandado" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-        </div>
-        <h3 data-t="muy_pronto">Muy pronto</h3>
-        <p data-t="ev_cerrado">Los eventos de la colmena. Todavía no está abierto.</p>
-      </div>
-    </div>
-  </div>
-
   <!-- VIEW: COMUNIDAD -->
   <div class="view" id="view-comunidad">
     <div class="vhead"><div class="vh-title">Comunidad</div><div class="vh-sub">Muy pronto…</div></div>
@@ -438,7 +414,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   <div class="bnav" id="bnav">
     <button class="on" data-v="mapa" onclick="goView('mapa')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-3.8-4.2-6.5-7.3-6.5-10.4a6.5 6.5 0 1 1 13 0C18.5 13.7 15.8 16.8 12 21Z"/><circle cx="12" cy="10.3" r="2.3"/></svg><span data-t="nav_mapa">Mapa</span></button>
     <button data-v="saber" onclick="goView('saber')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.3-9-8.5C1.7 8.2 3.7 5.5 6.7 5.5c2 0 3.7 1.1 4.3 2.6h2c.6-1.5 2.3-2.6 4.3-2.6 3 0 5 2.7 3.7 6-2 4.2-9 8.5-9 8.5Z"/></svg><span data-t="nav_saber">Saber+</span></button>
-    <button data-v="eventos" onclick="goView('eventos')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span data-t="nav_ev">Eventos</span></button>
     <button data-v="comunidad" onclick="goView('comunidad')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="13.5" rx="5.5" ry="6"/><path d="M7.5 11h9M7.5 16h9M9.5 5.5C9 4.5 8 4 7 4M14.5 5.5C15 4.5 16 4 17 4"/></svg><span data-t="nav_com">Comunidad</span></button>
   </div>
 
@@ -590,7 +565,8 @@ function renderList(){
 var LIST={data:[],shown:0,step:30};
 function cardHtml(c){
   var TY=TYPE[c.type];
-  var ev=c.events&&c.events.length?'<span class="tag ev">Evento</span>':'';
+  /* Distintivo aparcado · ver _dev/aparcado.md */
+  var ev='';
   var brz=c.brosin?'<span class="tag brosin">by Brosin</span>':'';
   var dt=(geoOn&&c._d!=null)?' · a '+(c._d<1?Math.round(c._d*1000)+' m':c._d.toFixed(1)+' km'):'';
   var bstyle=TY.border?';border:1px solid #2A2A2A':'';
@@ -630,7 +606,7 @@ function initMap(){
     map=L.map("map",{zoomControl:true,attributionControl:true}).setView([40.0,-3.7],5.4);
     map.attributionControl.setPrefix(false);
     L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",{maxZoom:19,attribution:'© OpenStreetMap · © CARTO'}).addTo(map);
-    bindMapEvents();
+    bindMapListeners();
     drawMarkers(true);
   }catch(e){ document.getElementById("map").style.display="none"; document.getElementById("mapfallback").style.display="flex"; }
 }
@@ -693,7 +669,7 @@ function drawMarkers(fit){
   }
 }
 /* Al mover o hacer zoom se repintan solo los marcadores visibles */
-function bindMapEvents(){
+function bindMapListeners(){
   if(!map) return;
   var t=null;
   map.on('moveend zoomend',function(){
@@ -773,7 +749,7 @@ function fichaUrl(c,modo){
   return 'formulario.html?'+q.join('&');
 }
 function closeDetail(){ document.getElementById("detail").classList.remove("show"); }
-var VIEWS=["saber","eventos","comunidad","menu","nosotros","empresarios","legal"];
+var VIEWS=["saber","comunidad","menu","nosotros","empresarios","legal"];
 function goView(v){
   VIEWS.forEach(function(x){var el=document.getElementById("view-"+x); if(el) el.classList.toggle("show", x===v);});
   document.querySelectorAll(".bnav button").forEach(function(b){b.classList.toggle("on", b.getAttribute("data-v")===v);});
