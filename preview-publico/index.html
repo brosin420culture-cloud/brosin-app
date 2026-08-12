@@ -112,6 +112,12 @@ header{background:var(--negro);padding:12px 16px;flex:none;z-index:500;backgroun
   padding:13px 22px;border-radius:var(--r-pill);text-decoration:none}
 /* Sin el botón flotante no hace falta reservarle sitio abajo */
 .list.sinfab{padding-bottom:16px}
+/* El aviso de "no hay nada cerca" va encima de la lista, no la sustituye:
+   la lista ordenada por distancia sigue sirviendo. */
+.vacio.lejos{background:var(--carbon);border:1px solid var(--panal);border-radius:var(--r-card);
+  padding:16px 18px 20px;margin-bottom:12px}
+.vacio.lejos h3{font-size:16px;margin-top:0}
+.vacio.lejos .vacio-cta{margin-top:13px;padding:11px 20px;font-size:12.5px}
 
 /* ── Grupos de pines en el mapa ──────────────────── */
 /* Panal amarillo con el número en negro: superficie sólida, nunca
@@ -459,11 +465,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 </div>
 
 <script src="assets/leaflet/leaflet.js"></script>
-<script src="brosin-cluster.js?v=brosin-2135-9"></script>
-<script src="brosin-app-i18n.js?v=brosin-2135-9"></script>
-<script src="brosin-saber.js?v=brosin-2135-9"></script>
-<script src="brosin-paginas.js?v=brosin-2135-9"></script>
-<script src="clubs-data.js?v=brosin-2135-9"></script>
+<script src="brosin-cluster.js?v=brosin-2135-10"></script>
+<script src="brosin-app-i18n.js?v=brosin-2135-10"></script>
+<script src="brosin-saber.js?v=brosin-2135-10"></script>
+<script src="brosin-paginas.js?v=brosin-2135-10"></script>
+<script src="clubs-data.js?v=brosin-2135-10"></script>
 <script>
 const CLUBS = window.CLUBS || [];
 /* Atajo al diccionario de la app (28 idiomas). Si el módulo no cargara,
@@ -570,6 +576,34 @@ function visible(){
 
    Cada búsqueda fallida es la oportunidad de sumar un local. Es lo
    que hace falta para llegar a los 500. */
+/* El local publicado más cercano a quien mira, con su distancia puesta */
+function masCercano(){
+  if(userLat==null) return null;
+  var mejor=null;
+  CLUBS.forEach(function(c){
+    var d=dist(userLat,userLng,c.lat,c.lng);
+    if(!mejor||d<mejor._d){ mejor={lat:c.lat,lng:c.lng,name:c.name,city:c.city,_d:d}; }
+  });
+  return mejor;
+}
+
+function km(d){ return d<1 ? Math.round(d*1000)+' m' : Math.round(d)+' km'; }
+
+/* ── "Cerca de mí" cuando no hay nada cerca ────────────────────
+   La lista ordenada por distancia sigue siendo útil, así que no se
+   quita. Pero encabezarla con una ficha "a 312 km" sin más es tomar
+   el pelo: se avisa antes de que en su zona todavía no hay nada, y
+   se le ofrece ponerlo él. */
+function lejosHtml(cerca){
+  var url='formulario.html'+(cerca.city?'':'');
+  return '<div class="vacio lejos">'+
+    '<h3>'+esc(T('vacio_h'))+'</h3>'+
+    '<div class="vacio-q">'+esc(T('lo_mas_cerca')||'')+' '+km(cerca._d)+'</div>'+
+    '<p>'+esc(T('vacio_p'))+'</p>'+
+    '<a class="vacio-cta" href="'+url+'" target="_blank" rel="noopener">+ '+esc(T('anade'))+'</a>'+
+    '</div>';
+}
+
 function vacioHtml(){
   if(filter==='fav') return '<div class="empty">'+esc(T('sin_favs'))+'</div>';
 
@@ -611,8 +645,11 @@ function renderList(){
       if(map) setTimeout(function(){ map.invalidateSize(); },220); }
     return;
   }
-  if(fab) fab.style.display='';
-  if(lista) lista.classList.remove('sinfab');
+  /* El aviso de "no hay nada cerca" ya lleva su botón: dos iguales
+     pegados, uno flotando encima del otro, queda a desastre. */
+  var avisaLejos = geoOn && data.length && data[0]._d>60;
+  if(fab) fab.style.display = avisaLejos ? 'none' : '';
+  if(lista) lista.classList.toggle('sinfab', !!avisaLejos);
   var mp=document.getElementById('map');
   if(mp && mp.classList.contains('mini')){ mp.classList.remove('mini');
     if(map) setTimeout(function(){ map.invalidateSize(); },220); }
@@ -620,6 +657,9 @@ function renderList(){
      Se pintan por tandas y el resto entra al hacer scroll. */
   LIST.data=data; LIST.shown=0;
   wrap.innerHTML='';
+  /* "Cerca de mí" y lo más próximo a 300 km: se avisa antes de que
+     la primera ficha diga "a 312 km" y parezca una broma. */
+  if(geoOn && data.length && data[0]._d>60) wrap.innerHTML=lejosHtml(data[0]);
   appendChunk();
 }
 
@@ -830,7 +870,20 @@ function toggleGeo(btn){
   txt.textContent=T('buscando');
   navigator.geolocation.getCurrentPosition(function(p){
     userLat=p.coords.latitude; userLng=p.coords.longitude; geoOn=true; btn.classList.add('on'); txt.textContent=T('cerca_on');
-    if(map){ if(userMarker)map.removeLayer(userMarker); userMarker=L.circleMarker([userLat,userLng],{radius:8,color:'#9013FE',fillColor:'#9013FE',fillOpacity:.9,weight:3}).addTo(map); map.setView([userLat,userLng],11); }
+    if(map){
+      if(userMarker)map.removeLayer(userMarker);
+      userMarker=L.circleMarker([userLat,userLng],{radius:8,color:'#9013FE',fillColor:'#9013FE',fillOpacity:.9,weight:3}).addTo(map);
+      /* Con 20 locales en toda España, encuadrar en el usuario a zoom 11
+         deja el mapa vacío: no hay nada a 20 km de casi nadie. Se encuadra
+         al usuario CON el local más cercano, aunque quede lejos, para que
+         se vea que existe algo y hacia dónde cae. */
+      var cerca=masCercano();
+      if(cerca && cerca._d>12){
+        map.fitBounds(L.latLngBounds([[userLat,userLng],[cerca.lat,cerca.lng]]),{padding:[40,40],maxZoom:12});
+      } else {
+        map.setView([userLat,userLng],11);
+      }
+    }
     renderList(); drawMarkers(true);
   }, function(){ txt.textContent=T('cerca'); alert('No pudimos obtener tu ubicación. Revisa el permiso de ubicación del navegador.'); });
 }
