@@ -64,7 +64,10 @@ header{background:var(--negro);padding:12px 16px;flex:none;z-index:500;backgroun
 .banner b{color:var(--amarillo);font-weight:700}
 
 /* ── Mapa ───────────────────────────────────────── */
-#map{height:32%;flex:none;background:var(--carbon);z-index:1}
+#map{height:32%;flex:none;background:var(--carbon);z-index:1;transition:height .18s}
+/* Sin resultados el mapa no enseña nada: se encoge y le deja sitio
+   al hueco, para que el botón de dar de alta se vea sin scroll. */
+#map.mini{height:18%}
 #mapfallback{display:none;height:32%;flex:none;align-items:center;justify-content:center;text-align:center;color:var(--humo);font-size:14px;padding:20px;background:var(--carbon)}
 .leaflet-container{background:var(--negro);font-family:var(--font)}
 .leaflet-popup-content-wrapper{background:var(--carbon);color:var(--blanco);border:1px solid var(--panal);border-radius:var(--r-chip);box-shadow:0 8px 24px rgba(0,0,0,.55)}
@@ -96,6 +99,19 @@ header{background:var(--negro);padding:12px 16px;flex:none;z-index:500;backgroun
 /* El local se dio de alta él mismo: se nota, pero sin gritar */
 .tag.alta{background:transparent;border:1px solid var(--amarillo);color:var(--amarillo);padding:2px 8px}
 .empty{text-align:center;color:var(--humo);padding:40px 20px;font-size:15px}
+/* Búsqueda sin resultados: en vez de un muro, una puerta.
+   Va apretado a propósito: el botón tiene que verse sin hacer
+   scroll, o es como si no estuviera. */
+.vacio{text-align:center;padding:16px 22px 24px}
+.vacio img{height:64px;width:auto;opacity:.9}
+.vacio h3{color:var(--blanco);font-size:17px;font-weight:700;margin:10px 0 3px;line-height:1.25}
+.vacio-q{color:var(--amarillo);font-size:15px;font-weight:700;margin-bottom:6px;word-break:break-word}
+.vacio p{color:var(--humo);font-size:13.5px;line-height:1.45;margin:0 auto;max-width:290px}
+.vacio-cta{display:inline-block;margin-top:15px;background:var(--amarillo);color:var(--negro);
+  font-weight:700;font-size:13.5px;letter-spacing:.03em;text-transform:uppercase;
+  padding:13px 22px;border-radius:var(--r-pill);text-decoration:none}
+/* Sin el botón flotante no hace falta reservarle sitio abajo */
+.list.sinfab{padding-bottom:16px}
 
 /* ── Grupos de pines en el mapa ──────────────────── */
 /* Panal amarillo con el número en negro: superficie sólida, nunca
@@ -521,7 +537,10 @@ const TYPE={
  empresa:{tint:"#2A2A2A",ic:"#BDBDBD",label:"Empresa",pin:["#2A2A2A","#BDBDBD"],svg:ICON.empresa},
  coffeeshop:{tint:"#121212",ic:"#FFD400",label:"Coffeeshop",pin:["#121212","#FFD400"],svg:ICON.coffeeshop,border:true}
 };
-let filter="all",query="",selPais="",selCcaa="",selProv="",markers=[],map=null;
+/* query va en minúsculas para comparar; queryTal cual lo escribió,
+   para enseñárselo y para prellenar el formulario. Si no, un local
+   de Bilbao se daría de alta con la ciudad "bilbao". */
+let filter="all",query="",queryTal="",selPais="",selCcaa="",selProv="",markers=[],map=null;
 let geoOn=false,userLat=null,userLng=null,userMarker=null;
 function starStr(r){const f=Math.round(r);return "★★★★★".slice(0,f)+"☆☆☆☆☆".slice(0,5-f);}
 function dist(la1,lo1,la2,lo2){var R=6371,dLa=(la2-la1)*Math.PI/180,dLo=(lo2-lo1)*Math.PI/180;var a=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)*Math.sin(dLo/2);return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
@@ -538,6 +557,35 @@ function visible(){
   });
 }
 
+/* ── Cuando la búsqueda no encuentra nada ──────────────────────
+   Con 20 locales publicados, quedarse sin resultados no es la
+   excepción: es lo normal. Alguien de Bilbao busca su ciudad y no
+   hay nada. Decirle "No hay resultados con estos filtros" es un
+   muro y una mala primera impresión.
+
+   Así que el hueco explica por qué está vacío —el mapa empieza, y
+   solo salen los que dieron permiso— y ofrece la única salida útil:
+   que dé de alta su local. Si buscó una ciudad, el formulario se
+   abre con esa ciudad ya puesta.
+
+   Cada búsqueda fallida es la oportunidad de sumar un local. Es lo
+   que hace falta para llegar a los 500. */
+function vacioHtml(){
+  if(filter==='fav') return '<div class="empty">'+esc(T('sin_favs'))+'</div>';
+
+  /* Lo que buscaba: la ciudad escrita, o la provincia del desplegable */
+  var buscado = queryTal ? queryTal : (selProv || selCcaa || '');
+  var url = 'formulario.html' + (buscado ? '?ciudad='+encodeURIComponent(buscado) : '');
+
+  return '<div class="vacio">'+
+    '<img src="assets/mascotas/abeja.png" alt="">'+
+    '<h3>'+esc(T('vacio_h'))+'</h3>'+
+    (buscado ? '<div class="vacio-q">«'+esc(buscado)+'»</div>' : '')+
+    '<p>'+esc(T('vacio_p'))+'</p>'+
+    '<a class="vacio-cta" href="'+url+'" target="_blank" rel="noopener">+ '+esc(T('anade'))+'</a>'+
+    '</div>';
+}
+
 function renderList(){
   var wrap=document.getElementById("clubs"),countEl=document.getElementById("count");
   if(filter.indexOf("soon")===0){
@@ -551,12 +599,23 @@ function renderList(){
   if(geoOn && userLat!=null){ data=data.map(function(c){var o={};for(var k in c)o[k]=c[k];o._d=dist(userLat,userLng,c.lat,c.lng);return o;}).sort(function(a,b){return a._d-b._d;}); }
   countEl.textContent=data.length+" "+(data.length===1?T('local'):T('locales'))+(geoOn?" · "+T('por_cercania'):"");
   renderBanner();
+  var fab=document.getElementById('fab'), lista=document.querySelector('.list');
   if(!data.length){
-    wrap.innerHTML='<div class="empty">'+(filter==='fav'
-      ? esc(T('sin_favs'))
-      : esc(T('sin_result')))+'</div>';
+    wrap.innerHTML=vacioHtml();
+    /* El botón flotante tapaba justo la explicación, y encima repetía
+       lo que ya dice el botón de dentro. Sobra mientras esté el hueco. */
+    if(fab) fab.style.display='none';
+    if(lista){ lista.classList.add('sinfab'); lista.scrollTop=0; }
+    var mp=document.getElementById('map');
+    if(mp && !mp.classList.contains('mini')){ mp.classList.add('mini');
+      if(map) setTimeout(function(){ map.invalidateSize(); },220); }
     return;
   }
+  if(fab) fab.style.display='';
+  if(lista) lista.classList.remove('sinfab');
+  var mp=document.getElementById('map');
+  if(mp && mp.classList.contains('mini')){ mp.classList.remove('mini');
+    if(map) setTimeout(function(){ map.invalidateSize(); },220); }
   /* Pintar 2.137 tarjetas de golpe bloquea el móvil durante segundos.
      Se pintan por tandas y el resto entra al hacer scroll. */
   LIST.data=data; LIST.shown=0;
@@ -798,7 +857,7 @@ document.getElementById("chips").addEventListener("click",function(e){
   document.querySelectorAll(".chip").forEach(function(x){x.classList.remove("on");}); ch.classList.add("on");
   filter=ch.dataset.f; renderList(); drawMarkers(true);
 });
-document.getElementById("q").addEventListener("input",function(e){ query=e.target.value.toLowerCase().trim(); renderList(); drawMarkers(true); });
+document.getElementById("q").addEventListener("input",function(e){ queryTal=e.target.value.trim(); query=queryTal.toLowerCase(); renderList(); drawMarkers(true); });
 document.getElementById("paisSel").addEventListener("change",function(e){ selPais=e.target.value; selCcaa=""; selProv=""; populateCcaa(); renderList(); drawMarkers(true); });
 document.getElementById("ccaaSel").addEventListener("change",function(e){ selCcaa=e.target.value; selProv=""; populateProv(); renderList(); drawMarkers(true); });
 document.getElementById("provSel").addEventListener("change",function(e){ selProv=e.target.value; renderList(); drawMarkers(true); });
