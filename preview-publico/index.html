@@ -465,11 +465,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 </div>
 
 <script src="assets/leaflet/leaflet.js"></script>
-<script src="brosin-cluster.js?v=brosin-2135-10"></script>
-<script src="brosin-app-i18n.js?v=brosin-2135-10"></script>
-<script src="brosin-saber.js?v=brosin-2135-10"></script>
-<script src="brosin-paginas.js?v=brosin-2135-10"></script>
-<script src="clubs-data.js?v=brosin-2135-10"></script>
+<script src="brosin-cluster.js?v=brosin-2135-11"></script>
+<script src="brosin-app-i18n.js?v=brosin-2135-11"></script>
+<script src="brosin-saber.js?v=brosin-2135-11"></script>
+<script src="brosin-paginas.js?v=brosin-2135-11"></script>
+<script src="clubs-data.js?v=brosin-2135-11"></script>
 <script>
 const CLUBS = window.CLUBS || [];
 /* Atajo al diccionario de la app (28 idiomas). Si el módulo no cargara,
@@ -552,6 +552,10 @@ function starStr(r){const f=Math.round(r);return "★★★★★".slice(0,f)+"�
 function dist(la1,lo1,la2,lo2){var R=6371,dLa=(la2-la1)*Math.PI/180,dLo=(lo2-lo1)*Math.PI/180;var a=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)*Math.sin(dLo/2);return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
 
 function visible(){
+  /* Los chips "Muy pronto" no son filtros de locales: no deben devolver
+     nada. Antes caían por defecto y devolvían los 2.135, así que el mapa
+     se reencuadraba a toda Europa mientras la lista decía "Muy pronto". */
+  if(filter.indexOf("soon")===0) return [];
   return CLUBS.filter(function(c){
     if(filter==="fav" && !FAVS.has(c.id)) return false;
     if((filter==="csc"||filter==="grow"||filter==="cbd"||filter==="medicinal"||filter==="empresa"||filter==="coffeeshop") && c.type!==filter) return false;
@@ -595,7 +599,7 @@ function km(d){ return d<1 ? Math.round(d*1000)+' m' : Math.round(d)+' km'; }
    el pelo: se avisa antes de que en su zona todavía no hay nada, y
    se le ofrece ponerlo él. */
 function lejosHtml(cerca){
-  var url='formulario.html'+(cerca.city?'':'');
+  var url='formulario.html'+(cerca.city?'?ciudad='+encodeURIComponent(cerca.city):'');
   return '<div class="vacio lejos">'+
     '<h3>'+esc(T('vacio_h'))+'</h3>'+
     '<div class="vacio-q">'+esc(T('lo_mas_cerca')||'')+' '+km(cerca._d)+'</div>'+
@@ -627,6 +631,9 @@ function renderList(){
     var TT={"soon-academia":["Academia Brosin","Cursos y talleres de cultivo, CBD y reducción de riesgos, con certificado. Aprende con la comunidad.","assets/mascotas/panal.png"],"soon-carne":["Carné de socio digital","Tu carné Brosin en el móvil, con QR para acceder a tus clubes. Reconocible al instante, como tu colmena.","assets/mascotas/resina.png"]};
     var tt=TT[filter]||["Muy pronto","",""];
     wrap.innerHTML='<div class="soonbox"><img src="'+tt[2]+'" alt=""><h3>'+tt[0]+' · Muy pronto</h3><p>'+tt[1]+'</p><span class="pill">Bro, no te quedes sin, Brosin.</span></div>';
+    /* Sin esto, el scroll infinito seguía pegando las tarjetas del filtro
+       anterior DEBAJO del cartel: "Muy pronto" y luego 30 clubes. */
+    LIST.data=[]; LIST.shown=0;
     return;
   }
   var data=visible();
@@ -640,6 +647,9 @@ function renderList(){
        lo que ya dice el botón de dentro. Sobra mientras esté el hueco. */
     if(fab) fab.style.display='none';
     if(lista){ lista.classList.add('sinfab'); lista.scrollTop=0; }
+    /* Igual aquí: al bajar aparecían las tarjetas de la búsqueda anterior
+       justo debajo de "Todavía no hay nada por aquí". */
+    LIST.data=[]; LIST.shown=0;
     var mp=document.getElementById('map');
     if(mp && !mp.classList.contains('mini')){ mp.classList.add('mini');
       if(map) setTimeout(function(){ map.invalidateSize(); },220); }
@@ -733,6 +743,12 @@ function drawMarkers(fit){
   if(!map || !window.BrosinCluster) return;
   var layer=drawMarkers._layer;
   if(!layer){ layer=drawMarkers._layer=L.layerGroup().addTo(map); }
+  /* Cuál tenía el globo abierto. clearLayers() borra el marcador y
+     Leaflet cierra el globo al quitarlo: bastaba arrastrar el mapa un
+     centímetro para que desapareciera antes de poder pulsar "Ver ficha".
+     Se anota, se repinta, y se vuelve a abrir en el marcador nuevo. */
+  var abierto = (map._popup && map._popup._source && map._popup._source._clubId) || null;
+  drawMarkers._zoom = map.getZoom();
   layer.clearLayers(); markers=[];
 
   var data=visible();
@@ -747,6 +763,7 @@ function drawMarkers(fit){
     if(g.count===1){
       var c=g.single, TY=TYPE[c.type];
       mk=L.marker([c.lat,c.lng],{icon:L.divIcon({html:pinSvg(TY),className:'',iconSize:[30,38],iconAnchor:[15,38]})});
+      mk._clubId=c.id;
       mk.bindPopup('<div class="popnm">'+esc(c.name)+'</div><div class="popmeta">'+esc(typeLabel(c.type))+(c.brosin?' by Brosin':'')+' · '+esc(c.city)+'</div>'+
                    '<a class="poplink" href="#" onclick="openDetail('+c.id+');return false;">Ver ficha</a>');
     } else {
@@ -758,6 +775,14 @@ function drawMarkers(fit){
   });
 
   if(userMarker){ userMarker.addTo(map); }
+
+  /* Devolver el globo a su sitio. El guardia evita que reabrirlo dispare
+     otro repintado en bucle si Leaflet mueve el mapa para que quepa. */
+  if(abierto!=null && !drawMarkers._reabriendo){
+    var vuelve=markers.filter(function(m){return m._clubId===abierto;})[0];
+    if(vuelve){ drawMarkers._reabriendo=true; try{ vuelve.openPopup(); }catch(e){}
+      setTimeout(function(){ drawMarkers._reabriendo=false; },400); }
+  }
 
   /* Solo se reencuadra cuando cambian los filtros, no al mover el mapa */
   if(fit && data.length && !geoOn){
@@ -774,6 +799,13 @@ function bindMapListeners(){
   if(!map) return;
   var t=null;
   map.on('moveend zoomend',function(){
+    /* Con un globo abierto y sin cambiar de zoom, no se repinta: mover
+       el mapa un poco no cambia la agrupación, y repintar borraría el
+       marcador y Leaflet cerraría el globo al quitarlo. Bastaba arrastrar
+       un centímetro para que desapareciera antes de poder pulsar "Ver
+       ficha". Si cambia el zoom sí se repinta (la agrupación cambia) y
+       el globo se vuelve a abrir solo, más abajo. */
+    if(map._popup && map.getZoom()===drawMarkers._zoom) return;
     clearTimeout(t); t=setTimeout(function(){ drawMarkers(false); },90);
   });
 }
@@ -858,14 +890,26 @@ var VIEWS=["saber","comunidad","menu","nosotros","empresarios","legal"];
 function goView(v){
   VIEWS.forEach(function(x){var el=document.getElementById("view-"+x); if(el) el.classList.toggle("show", x===v);});
   document.querySelectorAll(".bnav button").forEach(function(b){b.classList.toggle("on", b.getAttribute("data-v")===v);});
-  document.getElementById("fab").style.display=(v==="mapa")?"flex":"none";
+  /* En el mapa el botón vuelve, salvo que esté puesto el hueco de "sin
+     resultados": ahí tapa el texto y repite lo que ya dice su botón. */
+  var hayHueco=!!document.querySelector('#clubs .vacio');
+  document.getElementById("fab").style.display=(v==="mapa" && !hayHueco)?"flex":"none";
   closeDetail();
   var act=document.getElementById("view-"+v); if(act) act.scrollTop=0;
 }
 
 function toggleGeo(btn){
   var txt=document.getElementById('geoTxt');
-  if(geoOn){ geoOn=false; btn.classList.remove('on'); txt.textContent=T('cerca'); if(userMarker&&map){map.removeLayer(userMarker);userMarker=null;} renderList(); drawMarkers(true); return; }
+  if(geoOn){
+    geoOn=false; btn.classList.remove('on'); txt.textContent=T('cerca');
+    if(userMarker&&map){map.removeLayer(userMarker);userMarker=null;}
+    /* Con la geo encendida el bloque de reencuadre se salta entero, así
+       que _lastFit se quedó con la clave de ANTES de encenderla y al
+       apagar coincidía: el mapa no volvía y te quedabas a zoom 11 sobre
+       tu ciudad, muchas veces sin un solo pin. */
+    _lastFit=null;
+    renderList(); drawMarkers(true); return;
+  }
   if(!navigator.geolocation){ alert('Tu navegador no permite geolocalización.'); return; }
   txt.textContent=T('buscando');
   navigator.geolocation.getCurrentPosition(function(p){
@@ -889,20 +933,26 @@ function toggleGeo(btn){
 }
 
 /* filtros provincia/ccaa */
+/* Un <option> con el texto sin escapar es el único sitio donde un campo
+   de la base llegaba a innerHTML sin pasar por esc(). Hoy ningún país,
+   comunidad o provincia lleva "<", pero los locales se dan de alta por
+   formulario. Y sin atributo value el navegador colapsa los espacios,
+   así que una provincia con doble espacio no filtraría nunca. */
+function opcion(v){ return '<option value="'+esc(v)+'">'+esc(v)+'</option>'; }
 function paisOf(c){return c.country||"España";}
 function buildFilters(){
   var paises=Array.from(new Set(CLUBS.map(paisOf))).sort();
-  document.getElementById('paisSel').innerHTML='<option value="">'+T('paises')+'</option>'+paises.map(function(p){return '<option>'+p+'</option>';}).join('');
+  document.getElementById('paisSel').innerHTML='<option value="">'+esc(T('paises'))+'</option>'+paises.map(opcion).join('');
   populateCcaa();
 }
 function populateCcaa(){
   var ccaas=Array.from(new Set(CLUBS.filter(function(c){return !selPais||paisOf(c)===selPais;}).map(function(c){return c.ccaa;}))).sort();
-  document.getElementById('ccaaSel').innerHTML='<option value="">'+T('zonas')+'</option>'+ccaas.map(function(c){return '<option>'+c+'</option>';}).join('');
+  document.getElementById('ccaaSel').innerHTML='<option value="">'+esc(T('zonas'))+'</option>'+ccaas.map(opcion).join('');
   populateProv();
 }
 function populateProv(){
   var provs=Array.from(new Set(CLUBS.filter(function(c){return (!selPais||paisOf(c)===selPais)&&(!selCcaa||c.ccaa===selCcaa);}).map(function(c){return c.prov;}))).sort();
-  document.getElementById('provSel').innerHTML='<option value="">'+T('provincias')+'</option>'+provs.map(function(p){return '<option>'+p+'</option>';}).join('');
+  document.getElementById('provSel').innerHTML='<option value="">'+esc(T('provincias'))+'</option>'+provs.map(opcion).join('');
 }
 
 document.getElementById("chips").addEventListener("click",function(e){
@@ -1032,7 +1082,20 @@ function applyLang(){
 function changeLang(v){
   if(!window.BrosinApp) return;
   BrosinApp.setLang(v);
-  applyLang(); renderSaber(); renderPaginas(); buildFilters(); renderList(); drawMarkers(true);
+  applyLang(); renderSaber(); renderPaginas();
+  /* buildFilters reescribe el innerHTML de los tres desplegables y eso
+     los devuelve a la primera opción, PERO las variables conservaban el
+     filtro. Resultado: la lista seguía filtrada por Málaga y el
+     desplegable decía "Todas las provincias", sin forma de limpiarlo con
+     un solo gesto. Se guardan y se devuelven. */
+  var _p=selPais, _c=selCcaa, _v=selProv;
+  buildFilters();
+  selPais=_p; selCcaa=_c; selProv=_v;
+  if(selPais) populateCcaa();
+  if(selCcaa) populateProv();
+  var sp=document.getElementById('paisSel'), sc=document.getElementById('ccaaSel'), sv=document.getElementById('provSel');
+  if(sp) sp.value=selPais; if(sc) sc.value=selCcaa; if(sv) sv.value=selProv;
+  renderList(); drawMarkers(true);
   var df=document.getElementById('dfav');
   if(document.getElementById('detail').classList.contains('show') && df && df.getAttribute('data-id')){
     openDetail(+df.getAttribute('data-id'));      // repinta la ficha en el idioma nuevo
