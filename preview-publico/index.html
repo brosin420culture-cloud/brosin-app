@@ -129,6 +129,8 @@ header{background:var(--negro);padding:12px 16px;flex:none;z-index:500;backgroun
 .claimbtn{display:block;background:var(--amarillo);color:var(--negro);font-weight:700;font-size:13px;
           letter-spacing:.04em;text-transform:uppercase;padding:12px;border-radius:var(--r-chip);text-decoration:none}
 .claimlink{display:inline-block;margin-top:11px;color:var(--humo);font-size:12.5px;text-decoration:underline}
+/* La salida se ve, pero no compite con el botón de completar */
+.claimsalir{margin-left:14px}
 .langrow{display:flex;align-items:center;gap:10px;background:var(--carbon);border:1px solid var(--panal);
          border-radius:var(--r-card);padding:13px 16px;margin-bottom:10px;font-weight:700}
 .langrow select{margin-left:auto;font-family:inherit;font-size:14px;padding:8px 10px;border-radius:var(--r-chip);
@@ -724,11 +726,15 @@ function openDetail(id){
   if(!c.verified) html+='<p class="dsrc">'+T('datos_publicos')+'</p>';
   document.getElementById("ddesc").innerHTML=html;
 
-  /* Llamada al propio negocio: es quien puede rellenar lo que falta */
+  /* Llamada al propio negocio: es quien puede rellenar lo que falta.
+     Y, en el mismo sitio y sin esconderlo, la puerta de salida.
+     Si el mapa se sostiene sobre el interés legítimo, poder decir
+     "quítame" tiene que costar un clic, no un email y una espera. */
   document.getElementById("dclaim").innerHTML=
     '<div class="claim"><b>'+T('es_tuyo')+'</b>'+
     '<a class="claimbtn" href="'+fichaUrl(c,'alta')+'" target="_blank" rel="noopener">'+T('completar')+'</a>'+
-    '<a class="claimlink" href="'+fichaUrl(c,'error')+'" target="_blank" rel="noopener">'+T('avisar')+'</a></div>';
+    '<a class="claimlink" href="'+fichaUrl(c,'error')+'" target="_blank" rel="noopener">'+T('avisar')+'</a>'+
+    '<a class="claimlink claimsalir" href="'+fichaUrl(c,'baja')+'" target="_blank" rel="noopener">'+T('quitar')+'</a></div>';
 
   document.getElementById("detail").classList.add("show");
   document.querySelector('#detail .dbody').scrollTop=0;

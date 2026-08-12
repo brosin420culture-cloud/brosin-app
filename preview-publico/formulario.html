@@ -2,7 +2,6 @@
 <html lang="es" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="robots" content="noindex,nofollow,noarchive">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#FFFFFF">
 <title>Brosin · Añade tu local</title>
@@ -168,17 +167,76 @@ var f=document.getElementById('f');
   var modo=P.get('modo')||'alta';
   document.getElementById('fFicha').value='#'+P.get('id')+' ('+modo+')';
   document.querySelector('[name="_subject"]').value =
-    (modo==='error' ? 'Aviso de error en ficha #' : 'Actualización de ficha #')+P.get('id');
+    (modo==='baja'  ? 'BAJA pedida · ficha #' :
+     modo==='error' ? 'Aviso de error en ficha #' :
+                      'Actualización de ficha #')+P.get('id');
+
+  /* ── Modo baja ────────────────────────────────────────────────
+     Quien viene a pedir la baja no viene a rellenar una ficha:
+     viene a irse. Pedirle horarios y descripción sería tomarle el
+     pelo. Se deja solo lo justo para saber quién es y poder
+     demostrar cuándo lo pidió, y se le quita el "required" a todo
+     lo demás para que pueda enviar en dos segundos. */
+  if(modo==='baja'){
+    /* Se cambian las CLAVES de traducción, no los textos.
+       Si escribiera aquí el castellano a pelo, un alemán que pulsa
+       "Eintrag entfernen" aterrizaría en una página en español — y la
+       puerta de salida es lo último que puede estar en un solo idioma.
+       Al final se vuelve a aplicar el idioma y se traduce todo. */
+    var poner=function(sel,clave){
+      var el=document.querySelector(sel); if(el) el.setAttribute('data-i18n',clave);
+    };
+    poner('header h1','b_title');
+    poner('header p','b_intro');
+    poner('.intro','b_note');
+    poner('#btn','b_btn');
+    poner('#ok h2','b_ok_t');
+    poner('#ok p','b_ok_m');
+    poner('.legal','b_legal');
+
+    /* fuera los campos que aquí no pintan nada */
+    ['Horario','Descripcion','Solo adultos','Instagram o web','Tipo','Provincia'].forEach(function(n){
+      var el=f.querySelector('[name="'+n+'"]'); if(el) el.closest('div').remove();
+    });
+    /* lo demás, opcional: ya tenemos sus datos */
+    f.querySelectorAll('[required]').forEach(function(el){ el.removeAttribute('required'); });
+    f.querySelectorAll('.req').forEach(function(el){ el.remove(); });
+
+    /* la casilla ya no es un permiso, es una declaración */
+    var chk=f.querySelector('[name="Consentimiento"]');
+    chk.name='Declaracion';
+    chk.value='Soy responsable de este local y pido la baja';
+    chk.setAttribute('required','required');
+    chk.parentNode.querySelector('span').setAttribute('data-i18n','b_decl');
+
+    /* qué quiere exactamente: no es lo mismo salir del mapa que
+       no querer estar guardado en ningún sitio */
+    var qué=document.createElement('div');
+    qué.className='full';
+    qué.innerHTML='<label data-i18n="b_que">¿Qué quieres?</label>'+
+      '<select name="Que pide" required>'+
+        '<option value="Quitadme del mapa" data-i18n="b_op1">Quitadme del mapa público</option>'+
+        '<option value="Borradme del todo" data-i18n="b_op2">Borradme del todo, tampoco quiero estar guardado</option>'+
+      '</select>';
+    f.querySelector('.grid').appendChild(qué);
+  }
 
   /* Aviso arriba, para que se entienda qué está pasando */
   var box=document.createElement('div');
   box.className='intro';
   box.style.cssText='background:#FFD400;color:#0A0A0A;border-color:#FFD400;font-weight:600';
-  box.textContent = modo==='error'
-    ? 'Estás avisando de un error en la ficha de "'+(P.get('nombre')||'')+'". Corrige lo que esté mal y envía.'
-    : 'Ya hemos rellenado lo que sabemos de "'+(P.get('nombre')||'')+'". Revísalo y completa lo que falte.';
+  var T=function(k,alt){ var v=window.BrosinI18n?BrosinI18n.t(k):''; return v||alt; };
+  box.textContent =
+    modo==='baja'  ? T('b_aviso','Vas a pedir la baja de «{n}». Comprueba que es tu local y envía.')
+                       .replace('{n}', P.get('nombre')||'') :
+    modo==='error' ? 'Estás avisando de un error en la ficha de "'+(P.get('nombre')||'')+'". Corrige lo que esté mal y envía.' :
+                     'Ya hemos rellenado lo que sabemos de "'+(P.get('nombre')||'')+'". Revísalo y completa lo que falte.';
   var intro=document.querySelector('.intro');
   intro.parentNode.insertBefore(box,intro);
+
+  /* Ahora que están puestas todas las claves, se traduce la página
+     entera al idioma de quien mira. Esto tiene que ir al final. */
+  if(modo==='baja' && window.BrosinI18n) BrosinI18n.apply(BrosinI18n.lang());
 })();
 f.addEventListener('submit',function(e){
   e.preventDefault();
