@@ -236,7 +236,12 @@ var f=document.getElementById('f');
 
   /* Ahora que están puestas todas las claves, se traduce la página
      entera al idioma de quien mira. Esto tiene que ir al final. */
-  if(modo==='baja' && window.BrosinI18n) BrosinI18n.apply(BrosinI18n.lang());
+  if(modo==='baja' && window.BrosinI18n){
+    BrosinI18n.apply(BrosinI18n.lang());
+    /* La pestaña del navegador también: si dice "Añade tu local"
+       mientras estás pidiendo la baja, parece que te han colado otra cosa. */
+    document.title='Brosin · '+(document.querySelector('header h1').textContent||'');
+  }
 })();
 f.addEventListener('submit',function(e){
   e.preventDefault();
